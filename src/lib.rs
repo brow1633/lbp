@@ -4,6 +4,7 @@ use numpy::ndarray::parallel::prelude::*;
 use pyo3::{pymodule, types::PyModule, PyResult, Python, Bound};
 use rayon::prelude::*;
 
+
 #[pymodule]
 fn hw7_EthanBrown<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     fn lbp(image: ArrayView2<'_, u8>, p: usize, r: f64) -> Array2<u8> {
@@ -17,10 +18,10 @@ fn hw7_EthanBrown<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
         let (del_ks, del_ls): (Vec<f64>, Vec<f64>) = (0..p).map(|k| {
             (r * (2.0 * std::f64::consts::PI * k as f64 / p as f64).cos(),
             r * (2.0 * std::f64::consts::PI * k as f64 / p as f64).sin())
-        }).collect();
+        }).unzip();
     
         // Process chunks of rows in parallel
-        let chunk_size = 10;
+        let chunk_size = 20;
         output.axis_chunks_iter_mut(Axis(0), chunk_size)
             .into_par_iter()
             .enumerate()
